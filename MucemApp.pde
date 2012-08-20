@@ -12,9 +12,9 @@ Magnetophone aMagnetophone;
 PFont tFont;
 ImageMap tMap;
 File[] pictures;
-APWidgetContainer container1, container2, container3;
+APWidgetContainer container1, container2, container3, container4;
 APEditText textName, textSurname, textEmail;
-APButton btnValidate, btnHome;
+APButton btnValidate, btnHome, btnValEmail, btnDelEmail, btnStop ;
 PImage tBG, tP1, tP2, tP3, tFace, tFace1; 
 int tNbP=1;
 String tID;
@@ -117,7 +117,9 @@ void setup() {
   textEmail.setCloseImeOnDone(true);
 
   container2 = new APWidgetContainer( this );
-  btnValidate = new APButton(860, 600, 210, 50, "Valider");
+  btnStop = new APButton(730, 600, 210, 50, "Stop");
+  btnValidate = new APButton(980, 600, 210, 50, "Confirmer");
+  container2.addWidget(btnStop);
   container2.addWidget(btnValidate);
   container2.hide();
 
@@ -125,6 +127,13 @@ void setup() {
   btnHome = new APButton(860, 600, 210, 50, "Page d'accueil");
   container3.addWidget(btnHome);
   container3.hide();
+
+  container4 = new APWidgetContainer( this );
+  btnDelEmail = new APButton(720, 460, 210, 50, "Corriger");
+  btnValEmail = new APButton(1000, 460, 210, 50, "Confirmer");
+  container4.addWidget(btnDelEmail );
+  container4.addWidget(btnValEmail);
+  container4.hide();
 
   tMap = new ImageMap();
   tMap.addATouchZone(730, 485, 870, 550, new startRecord(aMagnetophone));
@@ -143,6 +152,14 @@ void draw() {
   switch (tNbP) {
   case 1:
     image(tP1, 640, 0);
+    break;
+  case 4:
+    image(tP1, 640, 0);
+    textFont(tFont, 20);
+    fill(0, 0, 128);
+    text(textName.getText(), 860, 324);
+    text(textSurname.getText(), 860, 364);
+    text(textEmail.getText(), 860, 404);
     break;
   case 2:
     image(tP2, 640, 0);
@@ -182,21 +199,32 @@ void onClickWidget(APWidget widget) {
   if (widget == textEmail) {
     tID = year()+nf(month(), 2)+nf(day(), 2)+"_"+textEmail.getText()+"_"+textName.getText()+"-"+textSurname.getText();
     aMagnetophone.setFileName(tID);
-    
     container1.hide();
-    textFont(tFont, 150);
-    fill(0);
-    text(textName.getText(), 860, 300);
-    text(textSurname.getText(), 860, 340);
-    text(textEmail.getText(), 860, 380);
-    /*
+    container4.show();
+    tNbP = 4;
+  }
+  if (widget == btnValEmail) {
+    container4.hide();
     tNbP = 2;
     container2.show();
     textName.setText("");
     textSurname.setText("");
     textEmail.setText("");
-    */
+    btnValidate.getView().setEnabled(false);
   }
+  if (widget == btnDelEmail) {
+    container4.hide();
+    tNbP = 1;
+    container1.show();
+  }
+  if (widget == btnStop) {
+    if ( aMagnetophone.tMode == "Record") {
+      aMagnetophone.record();
+      btnValidate.getView().setEnabled(true);
+    }
+    if ( aMagnetophone.tMode == "Play")
+      aMagnetophone.play();
+  }  
   if (widget == btnValidate) {
     aMagnetophone.stop();
     container2.hide();

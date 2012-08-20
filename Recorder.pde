@@ -74,7 +74,9 @@ class Magnetophone {
       mPlayer = null;
     }
     tTimer = 0;
+    tTS =0;
     tFileName = null;
+    tMode = "Empty";
   }
 
   void record() {
